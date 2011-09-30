@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<title>Go &amp; cgo: integrating existing C code with Go</title>
+	<script src="slides.js"></script>
+	<style>
+		.ak h3 {
+			font-size: 48px;
+		}
+		.ak pre {
+			margin-top: 10px;
+			margin-bottom: 10px;
+		}
+	</style>
+</head>
+
+<body class="ak" style="display: none;">
+<section class="slides layout-regular template-default">
+
+<article>
+	<h1>Go &amp; cgo: integrating existing C code with Go</h1>
+	<p>Andreas Krennmair &lt;ak@synflood.at&gt;</p>
+	<p>Golang User Group Berlin</p>
+	<p>Twitter: <strong><a href="https://twitter.com/der_ak">@der_ak</a></strong></p>
+</article>
+
+<article>
+	<h3>Introduction</h3>
+	<ul>
+		<li>Go is meant to be a practical language</li>
+		<li>Integration with existing software, infrastructure and protocols necessary</li>
+		<li>Ability to use existing C code is crucial for success (case in point: C++)</li>
+		<li>Go's solution: cgo</li>
+		<li>Tool to generate code to access C library functions and global variables</li>
+	</ul>
+</article>
+
+<article>
+	<h3>cgo: Basic Steps</h3>
+	<ol>
+		<li>start a new .go source file</li>
+		<li><code>import "C"</code></li>
+		<li>embed the C code you want to interface as comment (e.g. <code>#include &lt;foo.h&gt;)</code></li>
+		<li>Imported C functions, types and global variables are available under the virtual "C" package</li>
+		<li>Add <code>CGOFILES=foo.go</code> to your Makefile</li>
+		<li>optional: <code>#cgo</code> preprocessor instructions to set C defines and linker flags</li>
+	</ol>
+	<h4>Yes, it's that simple.</h4>
+</article>
+
+
+</section>
+</body>
+</html>
