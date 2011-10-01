@@ -75,6 +75,111 @@ func Getpwnam(name string) *Passwd {
 }</pre>
 </article>
 
+<article>
+	<h3>Linking</h3>
+	<ul>
+		<li>Usually, you want to access functions outside of libc</li>
+		<li>Linking to external libraries required</li>
+		<li>Two possibilities:
+			<ol>
+				<li>Add <code>CGO_LDFLAGS</code> to Makefile</li>
+				<li>Embed in .go source file using <code>#cgo</code> directive (preferred)</li>
+			</ol>
+		</li>
+		<li>One step further: cgo can use pkg-config</li>
+	</ul>
+</article>
+
+<article>
+	<h3>Linking Examples</h3>
+	<ul>
+		<li><code>#cgo LDFLAGS:</code>
+		<pre>package pcap
+/*
+#cgo LDFLAGS: -lpcap
+#include &lt;stdlib.h&gt;
+#include &lt;pcap.h&gt;
+*/
+import "C"</pre>
+		</li>
+		<li><code>#cgo pkg-config:</code>
+		<pre>package stfl
+/*
+#cgo pkg-config: stfl
+#cgo LDFLAGS: -lncursesw
+#include &lt;stdlib.h&gt;
+#include &lt;stfl.h&gt;
+*/
+import "C"</pre>
+		</li>
+	</ul>
+</article>
+
+<article>
+	<h3>Mapping the C namespace to Go</h3>
+	<ul>
+		<li>Everything declared in the C code is available in the <code>C</code> pseudo-package</li>
+		<li>Fundamental C data types have their counterpart, e.g. <code>int</code> &rarr; <code>C.int</code>, <code>unsigned short</code> &rarr; <code>C.ushort</code>, etc.</li>
+		<li>The Go equivalent to <code>void *</code> is <code>unsafe.Pointer</code></li>
+		<li><code>typedef</code>s are available under their own name</li>
+		<li><code>struct</code>s are available with a <code>struct_</code> prefix, e.g. <code>struct foo</code> &rarr; <code>C.struct_foo</code>, same goes for <code>union</code>s and <code>enum</code>s</li>
+	</ul>
+</article>
+
+<article>
+	<h3>Conversion between C and Go strings</h3>
+	<ul>
+		<li>The <code>C</code> package contains conversion functions to convert Go to C strings and vice versa</li>
+		<li>Also: opaque data (behind <code>void *</code>) to <code>[]byte</code></li>
+	</ul>
+<pre>
+// Go string to C string; result must be freed with C.free
+func C.CString(string) *C.char
+
+// C string to Go string
+func C.GoString(*C.char) string
+
+// C string, length to Go string
+func C.GoStringN(*C.char, C.int) string
+
+// C pointer, length to Go []byte
+func C.GoBytes(unsafe.Pointer, C.int) []byte
+</pre>
+</article>
+
+<article>
+	<h3>Calling Go code from C (1)</h3>
+	<ul>
+		<li>Go code can be exported via comment: <code>//export &lt;function-name&gt;</code></li>
+		<li>It can then be called from C</li>
+	</ul>
+	<pre>
+package foo
+
+/*
+extern void myprint(int i);
+
+void dofoo(void) {
+	int i;
+	for (i=0;i&lt;10;i++) {
+		myprint(i);
+	}
+}
+*/
+import "C"</pre>
+</article>
+
+<article>
+	<h3>Calling Go code from C (2)</h3>
+	<pre>//export myprint
+func myprint(i C.int) {
+	fmt.Printf("i = %v\n", uint32(i))
+}
+
+func DoFoo() {
+	C.dofoo()
+}</pre>
+</article>
 
 </section>
 </body>
