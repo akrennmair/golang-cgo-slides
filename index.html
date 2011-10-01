@@ -42,7 +42,7 @@
 	<ol>
 		<li>start a new .go source file</li>
 		<li><code>import "C"</code></li>
-		<li>embed the C code you want to interface as comment (e.g. <code>#include &lt;foo.h&gt;) prior to the <code>import</code></code></li>
+		<li>embed the C code you want to interface as comment (e.g. <code>#include &lt;foo.h&gt;</code>) prior to the <code>import</code></code></li>
 		<li>Imported C functions, types and global variables are available under the virtual "C" package</li>
 		<li>Add <code>CGOFILES=foo.go</code> to your Makefile</li>
 		<li>optional: <code>#cgo</code> preprocessor instructions to set C defines and linker flags</li>
